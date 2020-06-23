@@ -1,98 +1,108 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    title: "Antonx-Training",
+    debugShowCheckedModeBanner: false,
+    home: _MyTraining(),
+  );
   }
 }
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+class _MyTraining extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyTrainingState createState() => _MyTrainingState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MyTrainingState extends State<_MyTraining> {
+  int counter=0;
+  int get getCounter => counter;
 
-  void _incrementCounter() {
+  _increment() {
     setState(() {
-      // This is test comment
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("VCS practice"),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'changes are here',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: MyInheritedWidget(
+        mystate: this,
+        child: HomePage()),
     );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          showText(context),
+          showPrimaryButtons(context),
+        ],
+      ),
+    );
+  }
+
+  showText(BuildContext context) {
+    final mystatus = MyInheritedWidget.of(context).mystate;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RichText(
+          text: TextSpan(children: [
+        TextSpan(
+          text: "You have push the button this many time\n",
+       style: TextStyle(
+         color: Colors.black54,
+         fontSize: 18.0
+       )
+        ),
+        TextSpan(
+            text: "\t\t\t\t\t\t\t\t\t\t\t\t\t\t${mystatus.counter}",
+            style: Theme.of(context).textTheme.headline4),
+      ])),
+    );
+  }
+
+  showPrimaryButtons(BuildContext context) {
+    final mystatus = MyInheritedWidget.of(context).mystate;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RaisedButton(
+        onPressed: () {
+          mystatus._increment();
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class MyInheritedWidget extends InheritedWidget {
+  final _MyTrainingState mystate;
+  MyInheritedWidget({Key key, Widget child, @required this.mystate})
+      : super(key: key, child: child);
+  @override
+  bool updateShouldNotify(MyInheritedWidget oldWidget) {
+    return this.mystate.getCounter != oldWidget.mystate.getCounter;
+  }
+
+  static MyInheritedWidget of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType(
+        aspect: MyInheritedWidget);
   }
 }
